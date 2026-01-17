@@ -41,10 +41,10 @@ public class BibliotecaApuntesCasa {
                     menuLibro();
                     break;
                 case 3:
-                    //menuUsuario();
+                    menuUsuario();
                     break;
                 case 4:
-                    //menuPrestamo();
+                    menuPrestamo();
                     break;    
                     
             }
@@ -58,7 +58,7 @@ public class BibliotecaApuntesCasa {
             System.out.println("\t\t\t\n\nMENÚ DE LISTADOS");
             System.out.println("\t\t1- LISTADO DE LIBROS");
             System.out.println("\t\t3- LISTADO DE USUARIOS");
-            System.out.println("\t\t4- ´LISTADO DE PRÉSTAMOS");
+            System.out.println("\t\t4- LISTADO DE PRÉSTAMOS");
             System.out.println("\t\t9-  VOLVER AL MENÚ");
             opcion = sc.nextInt();
             
@@ -94,9 +94,61 @@ public class BibliotecaApuntesCasa {
                     modificarLibro();
                     break;
                 case 3:
-                    //eliminarLibro();
+                    eliminarLibro();
                     break;
             }
+            
+        } while (opcion != 9);
+    }
+    
+    public static void menuUsuario(){
+        int opcion;
+        do {            
+            System.out.println("\t\t\t\n\nMENÚ DE USUARIOS");
+            System.out.println("\t\t1- AÑADIR USUARIO");
+            System.out.println("\t\t2- MODIFICAR USUARIO");
+            System.out.println("\t\t3- ELIMINAR USUARIO");
+            System.out.println("\t\t9-  VOLVER AL MENÚ PRINCIPAL");
+            opcion = sc.nextInt();
+            
+            switch (opcion) {
+                case 1:
+                    añadirUsuario();
+                    break;
+                case 2:
+                    modificarUsuario();
+                    break;
+                case 3:
+                    eliminarUsuario();
+                    break;
+            }
+            
+            
+        } while (opcion != 9);
+    }
+    
+    public static void menuPrestamo(){
+        int opcion;
+        do {            
+            System.out.println("\t\t\t\n\nMENÚ DE PRESTAMOS");
+            System.out.println("\t\t1- AÑADIR PRESTAMO");
+            System.out.println("\t\t2- MODIFICAR PRESTAMO");
+            System.out.println("\t\t3- ELIMINAR PRESTAMO");
+            System.out.println("\t\t9-  VOLVER AL MENÚ PRINCIPAL");
+            opcion = sc.nextInt();
+            
+            switch (opcion) {
+                case 1:
+                    añadirPrestamo();
+                    break;
+                case 2:
+                    //modificarPrestamo();
+                    break;
+                case 3:
+                    //eliminarPrestamo();
+                    break;
+            }
+            
             
         } while (opcion != 9);
     }
@@ -151,7 +203,6 @@ public class BibliotecaApuntesCasa {
         System.out.print("Género: ");
         String genero = sc.next();
         System.out.print("Ejemplares");
-        
         int ejemplares = sc.nextInt();
         
         libros.add(new Libro(isbn, titulo, autor, genero, ejemplares));
@@ -159,6 +210,27 @@ public class BibliotecaApuntesCasa {
         for (Libro l : libros) {
             System.out.println(l);
         }
+    }
+    
+    public static void añadirUsuario(){
+        System.out.print("\n\nDNI: ");
+        String dni = sc.next();
+        System.out.print("Nombre: ");
+        String nombre = sc.next();
+        System.out.print("Email: ");
+        String email = sc.next();
+        System.out.print("Telefono: ");
+        String telefono = sc.next();
+        
+        usuarios.add(new Usuario(dni, nombre, email, telefono));
+        System.out.println("\n\nUsuario añadido. Comprobando listado");
+        for (Usuario u : usuarios) {
+            System.out.println(u);
+        }
+    }
+    
+    public static void añadirPrestamo(){
+        System.out.println("");
     }
 //</editor-fold>
     
@@ -197,14 +269,80 @@ public class BibliotecaApuntesCasa {
             }
         }
     }
+    
+    public static void modificarUsuario(){
+        System.out.print("\n\nDNI del usuario: ");
+        String dni = sc.next();
+        int p = buscaDni(dni);
+        
+        if (p == -1) {
+            System.out.println("DNI no encontrado");
+        } else {
+            System.out.print("\n\nNuevo dni: ");
+            dni = sc.next();
+            System.out.print("Nombre: ");
+            String nombre = sc.next();
+            System.out.print("Email: ");
+            String email = sc.next();
+            System.out.println("Telefono: ");
+            String telefono = sc.next();
+            
+            usuarios.get(p).setDni(dni);
+            usuarios.get(p).setNombre(nombre);
+            usuarios.get(p).setEmail(email);
+            usuarios.get(p).setTelefono(telefono);
+            
+            System.out.println("Comprobando listado");
+            for (Usuario u : usuarios) {
+                System.out.println(u);
+            }
+        }
+    }
+    
+    
 //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="ELIMINAR">
     public static void eliminarLibro(){
+        System.out.print("\n\nISBN del libro a eliminar: ");
+        String isbn = sc.next();
+        int p = buscaIsbn(isbn);
         
+        if (p == -1) {
+            System.out.println("ISBN no encontrado");
+        } else {
+            System.out.println("\nEliminando libro...");
+            libros.remove(p);
+            
+            System.out.println("\nPoniendo el listado para comprobar que se ha eliminado");
+            
+            for (Libro l : libros) {
+                System.out.println(l);
+            }
+        }
     }
-//</editor-fold>
     
+    public static void eliminarUsuario(){
+        System.out.print("\n\nDNI usuario: ");
+        String dni = sc.next();
+        
+        int p = buscaDni(dni);
+        
+        if (p == -1) {
+            System.out.println("DNI no encontrado");
+        } else {
+            System.out.println("Eliminando usuario...");
+            usuarios.remove(p);
+            
+            System.out.println("Comprobando listado");
+            for (Usuario u : usuarios) {
+                System.out.println(u);
+            }
+        }
+    }
+    
+    
+//</editor-fold>
     
     //<editor-fold defaultstate="collapsed" desc="BÚSQUEDAS">
     public static int buscaIsbn(String isbn){
@@ -212,6 +350,18 @@ public class BibliotecaApuntesCasa {
         int p = 0;
         for (Libro l : libros) {
             if (l.getIsbn().equalsIgnoreCase(isbn)) {
+                p = pos;
+            }
+            pos++;
+        }
+        return p;
+    }
+    
+    public static int buscaDni(String dni){
+        int pos = -1;
+        int p = 0;
+        for (Usuario u : usuarios) {
+            if (u.getDni().equalsIgnoreCase(dni)) {
                 p = pos;
             }
             pos++;
