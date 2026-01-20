@@ -4,6 +4,7 @@
 
 package es.educasturikercm69.bibliotecaapuntescasa;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -20,19 +21,20 @@ public class BibliotecaApuntesCasa {
     private static ArrayList <Prestamo> prestamosHist = new ArrayList();
     
     public static void main(String[] args) {
+        cargaDatos();
         menuGeneral();
     }
     //<editor-fold defaultstate="collapsed" desc="MENÚS">
     public static void menuGeneral(){
-        int opcion = 0;
-        do {            
+        int opcion;
+        do {
             System.out.println("\t\t\t\n\nMENÚ GENERAL");
             System.out.println("\t\t1- LISTADOS");
             System.out.println("\t\t2- MENÚ DE LIBROS");
             System.out.println("\t\t3- MENÚ DE USUARIOS");
             System.out.println("\t\t4- MENÚ DE PRÉSTAMOS");
             System.out.println("\t\t9-  SALIR");
-            
+            opcion = sc.nextInt();
             switch (opcion) {
                 case 1:
                     menuListados();
@@ -46,7 +48,6 @@ public class BibliotecaApuntesCasa {
                 case 4:
                     menuPrestamo();
                     break;    
-                    
             }
             
         } while (opcion != 9);
@@ -57,11 +58,10 @@ public class BibliotecaApuntesCasa {
         do {
             System.out.println("\t\t\t\n\nMENÚ DE LISTADOS");
             System.out.println("\t\t1- LISTADO DE LIBROS");
-            System.out.println("\t\t3- LISTADO DE USUARIOS");
-            System.out.println("\t\t4- LISTADO DE PRÉSTAMOS");
+            System.out.println("\t\t2- LISTADO DE USUARIOS");
+            System.out.println("\t\t3- LISTADO DE PRÉSTAMOS");
             System.out.println("\t\t9-  VOLVER AL MENÚ");
             opcion = sc.nextInt();
-            
             switch (opcion) {
                 case 1:
                     listadoLibros();
@@ -85,7 +85,6 @@ public class BibliotecaApuntesCasa {
             System.out.println("\t\t3- ELIMINAR LIBRO");
             System.out.println("\t\t9-  VOLVER AL MENÚ PRINCIPAL");
             opcion = sc.nextInt();
-            
             switch (opcion) {
                 case 1:
                     añadirLibro();
@@ -97,7 +96,6 @@ public class BibliotecaApuntesCasa {
                     eliminarLibro();
                     break;
             }
-            
         } while (opcion != 9);
     }
     
@@ -110,7 +108,6 @@ public class BibliotecaApuntesCasa {
             System.out.println("\t\t3- ELIMINAR USUARIO");
             System.out.println("\t\t9-  VOLVER AL MENÚ PRINCIPAL");
             opcion = sc.nextInt();
-            
             switch (opcion) {
                 case 1:
                     añadirUsuario();
@@ -122,8 +119,6 @@ public class BibliotecaApuntesCasa {
                     eliminarUsuario();
                     break;
             }
-            
-            
         } while (opcion != 9);
     }
     
@@ -132,24 +127,21 @@ public class BibliotecaApuntesCasa {
         do {            
             System.out.println("\t\t\t\n\nMENÚ DE PRESTAMOS");
             System.out.println("\t\t1- AÑADIR PRESTAMO");
-            System.out.println("\t\t2- MODIFICAR PRESTAMO");
-            System.out.println("\t\t3- ELIMINAR PRESTAMO");
+            System.out.println("\t\t2- DEVOLVER PRESTAMO");
+            System.out.println("\t\t3- PRORROGAR PRESTAMO");
             System.out.println("\t\t9-  VOLVER AL MENÚ PRINCIPAL");
             opcion = sc.nextInt();
-            
             switch (opcion) {
                 case 1:
                     añadirPrestamo();
                     break;
                 case 2:
-                    //modificarPrestamo();
+                    devolucionPrestamo();
                     break;
                 case 3:
-                    //eliminarPrestamo();
+                    prorrogarPrestamo();
                     break;
             }
-            
-            
         } while (opcion != 9);
     }
 //</editor-fold>
@@ -202,9 +194,9 @@ public class BibliotecaApuntesCasa {
         String autor = sc.next();
         System.out.print("Género: ");
         String genero = sc.next();
-        System.out.print("Ejemplares");
+        System.out.print("Ejemplares: ");
         int ejemplares = sc.nextInt();
-        
+
         libros.add(new Libro(isbn, titulo, autor, genero, ejemplares));
         System.out.println("Libro añadido. Listado de libros para confirmarlo:");
         for (Libro l : libros) {
@@ -230,7 +222,22 @@ public class BibliotecaApuntesCasa {
     }
     
     public static void añadirPrestamo(){
-        System.out.println("");
+        System.out.println("DNI del usuario: ");
+        String dni = sc.next();
+        System.out.println("ISBN del lirbo: ");
+        String isbn = sc.next();
+        
+        int pU = buscaDni(dni);
+        int pL = buscaIsbn(isbn);
+        
+        if (pU == -1 || pL == -1) {
+            System.out.println("Dni y/o isbn no encontrado");
+        } else {
+            LocalDate hoy = LocalDate.now();
+            prestamos.add(new Prestamo(libros.get(pL), usuarios.get(pL),hoy, hoy.plusDays(15)));
+            libros.get(pL).setEjemplares(libros.get(pL).getEjemplares()-1);
+            System.out.println("Préstamo realizado y grabado en el ArrayList");
+        }
     }
 //</editor-fold>
     
@@ -284,7 +291,7 @@ public class BibliotecaApuntesCasa {
             String nombre = sc.next();
             System.out.print("Email: ");
             String email = sc.next();
-            System.out.println("Telefono: ");
+            System.out.print("Telefono: ");
             String telefono = sc.next();
             
             usuarios.get(p).setDni(dni);
@@ -299,7 +306,39 @@ public class BibliotecaApuntesCasa {
         }
     }
     
+    public static void devolucionPrestamo(){
+        System.out.print("\n\nISBN: ");
+        String isbn = sc.next();
+        System.out.print("DNI: ");
+        String dni = sc.next();
+        int posPrest = buscaPrestamo(isbn, dni);
+        
+        if (posPrest == -1) {
+            System.out.println("Prestamo no encontrado");
+        } else {
+            System.out.println("Añadiendo el prestamo a prestamosHist");
+            prestamos.get(posPrest).setFechaDev(LocalDate.now());
+            libros.get(buscaIsbn(isbn)).setEjemplares(libros.get(buscaIsbn(isbn)).getEjemplares()+1);            
+            prestamosHist.add(prestamos.get(posPrest));
+            prestamos.remove(posPrest);
+        }
+    }
     
+    public static void prorrogarPrestamo(){
+        System.out.print("\n\nISBN: ");
+        String isbn = sc.next();
+        System.out.print("DNI: ");
+        String dni = sc.next(); 
+        int posPrest = buscaPrestamo(isbn, dni);
+        
+        if (posPrest == -1) {
+            System.out.println("Prestamo no encontrado");
+        } else {
+            System.out.println("Vamos a añadir otros 15 días de devolución");
+            LocalDate hoy = LocalDate.now();
+            prestamos.get(posPrest).setFechaDev(prestamos.get(posPrest).getFechaDev().plusDays(15));
+        }
+    }
 //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="ELIMINAR">
@@ -341,13 +380,12 @@ public class BibliotecaApuntesCasa {
         }
     }
     
-    
 //</editor-fold>
     
     //<editor-fold defaultstate="collapsed" desc="BÚSQUEDAS">
     public static int buscaIsbn(String isbn){
-        int pos = -1;
-        int p = 0;
+        int pos = 0;
+        int p = -1;
         for (Libro l : libros) {
             if (l.getIsbn().equalsIgnoreCase(isbn)) {
                 p = pos;
@@ -358,8 +396,8 @@ public class BibliotecaApuntesCasa {
     }
     
     public static int buscaDni(String dni){
-        int pos = -1;
-        int p = 0;
+        int pos = 0;
+        int p = -1;
         for (Usuario u : usuarios) {
             if (u.getDni().equalsIgnoreCase(dni)) {
                 p = pos;
@@ -367,6 +405,64 @@ public class BibliotecaApuntesCasa {
             pos++;
         }
         return p;
+    }
+    
+    public static int buscaPrestamo(String isbn, String dni){
+        int pos = 0;
+        int p1 = -1;
+        
+        for (Prestamo p : prestamos) {
+            if (p.getLibroPrest().getIsbn().equalsIgnoreCase(isbn) && 
+                p.getUsuarioPrest().getDni().equalsIgnoreCase(dni)) {
+                p1 = pos;
+            }
+            pos++;
+        }
+        return p1;
+    }
+//</editor-fold>
+
+    //<editor-fold defaultstate="collapsed" desc="CARGA DATOS">
+    public static void cargaDatos(){
+        libros.add(new Libro("1-11","El Hobbit","JRR Tolkien","Aventuras",3)); 
+        libros.add(new Libro("1-22","El Silmarillon","JRR Tolkien","Aventuras",3)); 
+        libros.add(new Libro("1-33","El Medico","N. Gordon","Aventuras",4)); 
+        libros.add(new Libro("1-44","Chaman","N. Gordon","Aventuras",3)); 
+        libros.add(new Libro("1-55","Momo","M. Ende","Aventuras",2)); 
+        libros.add(new Libro("1-66","Paraiso inhabitado","A.M.Matute","Aventuras",2)); 
+        libros.add(new Libro("1-77","Olvidado Rey Gudu","A.M.Matute","Aventuras",0)); 
+        libros.add(new Libro("1-88","El ultimo barco","D.Villar","Novela Negra",3)); 
+        libros.add(new Libro("1-99","Ojos de agua","D.Villar","Novela Negra",0)); 
+
+        usuarios.add(new Usuario("11","Ana","ana@email.com","621111111")); 
+        usuarios.add(new Usuario("22","David","david@email.com","622222222")); 
+        usuarios.add(new Usuario("33","Bea","bea@email.com","623333333")); 
+        usuarios.add(new Usuario("44","Lucas","lucas@email.com","624444444")); 
+        usuarios.add(new Usuario("55","Carlota","carlota@email.com","625555555")); 
+        usuarios.add(new Usuario("66","Juan","juan@email.com","626666666"));
+        
+        LocalDate hoy= LocalDate.now(); //OBTENEMOS LA FECHA DE HOY CON EL MÉTODO now()
+        
+	//PRESTAMOS "NORMALES" REALIZADOS HOY Y QUE SE HAN DE DEVOLVER EN 15 DÍAS
+	prestamos.add(new Prestamo(libros.get(0),usuarios.get(0), hoy,hoy.plusDays(15)));
+        prestamos.add(new Prestamo(libros.get(1),usuarios.get(0), hoy,hoy.plusDays(15)));
+        prestamos.add(new Prestamo(libros.get(5),usuarios.get(0), hoy,hoy.plusDays(15)));
+        prestamos.add(new Prestamo(libros.get(6),usuarios.get(4), hoy,hoy.plusDays(15)));
+        prestamos.add(new Prestamo(libros.get(6),usuarios.get(1), hoy,hoy.plusDays(15)));
+	//PRESTAMOS QUE YA TENIAN QUE HABER SIDO DEVUELTOS PORQUE SU FECHA DE DEVOLUCIÓN ES ANTERIOR A HOY
+        prestamos.add(new Prestamo(libros.get(5),usuarios.get(1), hoy.minusDays(17),hoy.minusDays(2))); 
+        prestamos.add(new Prestamo(libros.get(1),usuarios.get(4), hoy.minusDays(18),hoy.minusDays(3)));
+        prestamos.add(new Prestamo(libros.get(2),usuarios.get(4), hoy.minusDays(20),hoy.minusDays(5)));
+        prestamos.add(new Prestamo(libros.get(3),usuarios.get(4), hoy.minusDays(20),hoy.minusDays(5)));
+        
+        //PRESTAMOS HISTORICOS QUE YA HAN SIDO DEVUELTOS Y POR TANTO ESTÁN EN LA COLECCION prestamosHist
+	prestamosHist.add(new Prestamo(libros.get(0),usuarios.get(0), hoy.minusDays(20),hoy.minusDays(5)));
+        prestamosHist.add(new Prestamo(libros.get(2),usuarios.get(0), hoy.minusDays(20),hoy.minusDays(5)));
+        prestamosHist.add(new Prestamo(libros.get(7),usuarios.get(4), hoy.minusDays(20),hoy.minusDays(5)));
+        prestamosHist.add(new Prestamo(libros.get(5),usuarios.get(4), hoy.minusDays(20),hoy.minusDays(5)));
+        prestamosHist.add(new Prestamo(libros.get(1),usuarios.get(1), hoy.minusDays(20),hoy.minusDays(5)));
+        prestamosHist.add(new Prestamo(libros.get(7),usuarios.get(2), hoy.minusDays(15),hoy));
+        prestamosHist.add(new Prestamo(libros.get(6),usuarios.get(3), hoy.minusDays(15),hoy));
     }
 //</editor-fold>
 }
