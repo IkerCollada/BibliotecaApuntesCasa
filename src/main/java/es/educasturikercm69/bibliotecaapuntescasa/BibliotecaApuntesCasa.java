@@ -6,6 +6,7 @@ package es.educasturikercm69.bibliotecaapuntescasa;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 /**
@@ -21,41 +22,92 @@ public class BibliotecaApuntesCasa {
     private static ArrayList <Prestamo> prestamosHist = new ArrayList();
     
     public static void main(String[] args) {
+        //Biblioteca:
         cargaDatos();
-        //menuGeneral();
+        preguntaSeguridad();
         
+        
+        //Ejercicios del examen:
         //cargaDatosPrueba();
         //ejercicio1();
         //ejercicio2();
         //ejercicio3();
         //ejercicio4();
+        
+        //Apuntes Try-catch:
+        //trycatch();
     }
+    //<editor-fold defaultstate="collapsed" desc="Seguridad menor de edad">
+    /**
+     * @param edad es el nº entero que introduces por teclado.
+     * @return true si el acceso está permitido (boolean continuar).
+     * @throws ArithmeticException si la persona es menor de 18 años.
+     */
+    public static void preguntaSeguridad(){
+        System.out.println("Introduce tu edad:");
+        boolean continuar;
+        do {            
+         continuar = false;
+            try {
+            int edad = sc.nextInt();
+            revisaEdad(edad);
+            continuar = true;
+            
+            } catch (InputMismatchException e) {
+            System.out.println("Ha saltado una excepcion: " + e + ". por favor, intentelo de nuevo.");
+            sc.nextLine();
+            }
+        } while (!continuar);
+    }
+    
+    public static void revisaEdad(int edad){
+        if (edad < 18) {
+        throw new ArithmeticException("Acceso Prohibido a menores de 18 años.");
+        }else {
+        System.out.println("Acceso permitido.");
+        menuGeneral();
+        }
+    }
+//</editor-fold>
+    
     //<editor-fold defaultstate="collapsed" desc="MENÚS">
     public static void menuGeneral(){
         int opcion;
         do {
-            System.out.println("\t\t\t\n\nMENÚ GENERAL");
-            System.out.println("\t\t1- LISTADOS");
-            System.out.println("\t\t2- MENÚ DE LIBROS");
-            System.out.println("\t\t3- MENÚ DE USUARIOS");
-            System.out.println("\t\t4- MENÚ DE PRÉSTAMOS");
-            System.out.println("\t\t9-  SALIR");
+        System.out.println("\n\n\t\t\tMENÚ GENERAL");
+        System.out.println("\t\t1- LISTADOS");
+        System.out.println("\t\t2- MENÚ DE LIBROS");
+        System.out.println("\t\t3- MENÚ DE USUARIOS");
+        System.out.println("\t\t4- MENÚ DE PRÉSTAMOS");
+        System.out.println("\t\t9-  SALIR");
+            try {
             opcion = sc.nextInt();
-            switch (opcion) {
-                case 1:
-                    menuListados();
-                    break;
-                case 2:
-                    menuLibro();
-                    break;
-                case 3:
-                    menuUsuario();
-                    break;
-                case 4:
-                    menuPrestamo();
-                    break;    
-            }
-            
+            sc.nextLine(); //para limpiar el salto de línea
+                switch (opcion) {
+                    case 1:
+                        menuListados();
+                        break;
+                    case 2:
+                        menuLibro();
+                        break;
+                    case 3:
+                        menuUsuario();
+                        break;
+                    case 4:
+                        menuPrestamo();
+                        break; 
+                    case 9:
+                        break;
+                    default:
+                        System.out.println("Opción no válida. Intenta de nuevo.");
+                        break;
+                }
+            } catch (InputMismatchException e) {
+                System.out.println("Error encontrado: " + e.toString());
+                System.out.println("Debe de introducir por teclado un número entero de los que indica el menu");
+                sc.nextLine(); //para limpiar opcion
+                opcion = 0;
+                }
         } while (opcion != 9);
     }
     
@@ -67,18 +119,28 @@ public class BibliotecaApuntesCasa {
             System.out.println("\t\t2- LISTADO DE USUARIOS");
             System.out.println("\t\t3- LISTADO DE PRÉSTAMOS");
             System.out.println("\t\t9-  VOLVER AL MENÚ");
-            opcion = sc.nextInt();
-            switch (opcion) {
-                case 1:
-                    listadoLibros();
+            try {
+                opcion = sc.nextInt();
+                switch (opcion) {
+                    case 1:
+                        listadoLibros();
+                        break;
+                    case 2:
+                        listadoUsuarios();
+                        break;
+                    case 3:
+                        listadoPrestamos();
                     break;
-                case 2:
-                    listadoUsuarios();
-                    break;
-                case 3:
-                    listadoPrestamos();
-                    break;
-            }
+                    default:
+                        System.out.println("Opcion no valida. Intentalo de nuevo.");
+                        break;
+                }
+            } catch (InputMismatchException e) {
+                System.out.println("Error encontrado: " + e.toString());
+                System.out.println("Debe de introducir por teclado un número entero de los que indica el menu");
+                sc.nextLine(); //para limpiar opcion
+                opcion = 0;
+                }
         } while (opcion != 9);
     }
     
@@ -90,18 +152,28 @@ public class BibliotecaApuntesCasa {
             System.out.println("\t\t2- MODIFICAR LIBRO");
             System.out.println("\t\t3- ELIMINAR LIBRO");
             System.out.println("\t\t9-  VOLVER AL MENÚ PRINCIPAL");
-            opcion = sc.nextInt();
-            switch (opcion) {
-                case 1:
-                    añadirLibro();
-                    break;
-                case 2:
-                    modificarLibro();
-                    break;
-                case 3:
-                    eliminarLibro();
-                    break;
-            }
+            try {
+                opcion = sc.nextInt();
+                switch (opcion) {
+                    case 1:
+                        añadirLibro();
+                        break;
+                    case 2:
+                        modificarLibro();
+                        break;
+                    case 3:
+                        eliminarLibro();
+                        break;
+                    default:
+                        System.out.println("Opción no válida. Intenta de nuevo.");
+                        break;
+                }
+            } catch (InputMismatchException e) {
+                System.out.println("Error encontrado: " + e.toString());
+                System.out.println("Debe de introducir por teclado un número entero de los que indica el menu");
+                sc.nextLine(); //para limpiar opcion
+                opcion = 0;
+                }
         } while (opcion != 9);
     }
     
@@ -113,18 +185,28 @@ public class BibliotecaApuntesCasa {
             System.out.println("\t\t2- MODIFICAR USUARIO");
             System.out.println("\t\t3- ELIMINAR USUARIO");
             System.out.println("\t\t9-  VOLVER AL MENÚ PRINCIPAL");
-            opcion = sc.nextInt();
-            switch (opcion) {
-                case 1:
-                    añadirUsuario();
-                    break;
-                case 2:
-                    modificarUsuario();
-                    break;
-                case 3:
-                    eliminarUsuario();
-                    break;
-            }
+            try {
+                opcion = sc.nextInt();
+                switch (opcion) {
+                    case 1:
+                        añadirUsuario();
+                        break;
+                    case 2:
+                        modificarUsuario();
+                        break;
+                    case 3:
+                        eliminarUsuario();
+                        break;
+                    default:
+                        System.out.println("Opción no válida. Intenta de nuevo.");
+                        break;
+                }
+            } catch (InputMismatchException e) {
+                System.out.println("Error encontrado: " + e.toString());
+                System.out.println("Debe de introducir por teclado un número entero de los que indica el menu");
+                sc.nextLine(); //para limpiar opcion
+                opcion = 0;
+                }
         } while (opcion != 9);
     }
     
@@ -136,18 +218,28 @@ public class BibliotecaApuntesCasa {
             System.out.println("\t\t2- DEVOLVER PRESTAMO");
             System.out.println("\t\t3- PRORROGAR PRESTAMO");
             System.out.println("\t\t9-  VOLVER AL MENÚ PRINCIPAL");
-            opcion = sc.nextInt();
-            switch (opcion) {
-                case 1:
-                    añadirPrestamo();
-                    break;
-                case 2:
-                    devolucionPrestamo();
-                    break;
-                case 3:
-                    prorrogarPrestamo();
-                    break;
-            }
+            try {
+                opcion = sc.nextInt();
+                switch (opcion) {
+                    case 1:
+                        añadirPrestamo();
+                        break;
+                    case 2:
+                        devolucionPrestamo();
+                        break;
+                    case 3:
+                        prorrogarPrestamo();
+                        break;
+                    default:
+                        System.out.println("Opción no válida. Intenta de nuevo.");
+                        break;
+                }
+            } catch (Exception e) {
+                System.out.println("Error encontrado: " + e.toString());
+                System.out.println("Debe de introducir por teclado un número entero de los que indica el menu");
+                sc.nextLine(); //para limpiar opcion
+                opcion = 0;
+                }
         } while (opcion != 9);
     }
 //</editor-fold>
@@ -578,6 +670,24 @@ public class BibliotecaApuntesCasa {
     
     public static void ejercicio4(){
         System.out.println("Usuarios que tienen prestamos FUERA DE PLAZO:");
+    }
+//</editor-fold>
+    
+    //<editor-fold defaultstate="collapsed" desc="Try-catch">
+    public static void trycatch(){
+        boolean terminar;
+        int entero;
+        do {            
+         terminar = true;   
+            System.out.println("\t\t\n\nDebes introducir un número entero obligatoriamente:");
+            try {
+               entero = sc.nextInt();
+            } catch (InputMismatchException e) {
+            sc.nextLine(); //para limpiar
+            terminar = false;
+                System.out.println("No es número entero. Saltó la excepcion: " + e.toString());
+            }
+        } while (!terminar);
     }
 //</editor-fold>
 }
